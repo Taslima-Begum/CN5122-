@@ -1,4 +1,4 @@
-
+package Client;
 
 import java.awt.event.*;
 import java.awt.*;
@@ -71,7 +71,6 @@ public class LoginGUI implements ActionListener{
 		if(e.getSource()==registerBtn) {
 			frame.setVisible(false);
 			RegisterGUI r = new RegisterGUI();
-		
 			
 		}
 		

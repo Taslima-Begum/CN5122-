@@ -1,3 +1,4 @@
+package Client;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ public class Message implements Serializable{
     String password;
     boolean response;
     String chatName;
+    String fileName;
     //clientSendingMessages type MESSAGE
     public Message(String type, String srcUser, ArrayList<String> destUsers, String messageBody, String chatName){
 		this.type=type;
@@ -32,7 +34,7 @@ public class Message implements Serializable{
   		this.password=password;
   	}
     //clientSendFile type=FILE
-    public Message(String type, String srcUser, String destUser, byte[] file, String fileName, String chatName){
+    public Message(String type, String srcUser, ArrayList<String>destUsers, byte[] file, String fileName, String chatName){
   		this.type=type;
   		this.srcUser=srcUser;
   	}
@@ -74,6 +76,14 @@ public class Message implements Serializable{
         return this.srcUser;
     }
     
+    public ArrayList<String> getdestUsers() {
+        return this.destUsers;
+    }
+    
+    public byte[] getFileBytes() {
+        return this.b;
+    }
+    
     public String getMessageBody() {
         return this.messageBody;
     }
@@ -81,20 +91,9 @@ public class Message implements Serializable{
     public boolean getResponse() {
         return this.response;
     }
-    
-    public byte[] getBody() {
-        return this.b;
+    public String getFileName() {
+        return this.fileName;
     }
 
-    public byte[] getFile() {
-        Path f = file.toPath();
-        try {
-            return Files.readAllBytes(f);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
-    }
 
 }

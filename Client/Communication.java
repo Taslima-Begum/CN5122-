@@ -1,3 +1,4 @@
+package Client;
 
 import java.io.*;
 import java.net.Socket;
@@ -72,10 +73,32 @@ public class Communication {
 				}
 				break;		
 			case "MESSAGE" :
-				for(chatGUI a:chats.listChats) {
-					if(a.getChatName().equals(m.getChatName())) {
-						chats.updatechat(a,m.getsrcUser(),m.getMessageBody());
+				if(chats.chatExists(m.getChatName())) {
+				chats.updatechat(m.getChatName(),m.getsrcUser(),m.getMessageBody(),"left");
+				}
+				else {
+					chatGUI q = new chatGUI(m.getChatName(), m.getdestUsers());
+					chats.addchat(q);
+					chats.updatechat(m.getChatName(),m.getsrcUser(),m.getMessageBody(),"left");
+				}
+				break;
+			case "FILE" :
+				byte[]fileBytes=m.getFileBytes();
+				try {
+					File f = new File(m.getFileName());
+					BufferedOutputStream bos= new BufferedOutputStream(new FileOutputStream(f));
+					for(byte a:fileBytes) {
+						bos.write(a);
 					}
+					bos.flush();
+					bos.close();
+					
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				break;
 			case "USERS" :

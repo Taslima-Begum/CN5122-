@@ -1,49 +1,10 @@
+package Client;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JToolBar;
-import javax.swing.ListCellRenderer;
-
-import java.awt.BorderLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JLabel;
-import java.awt.Panel;
-import java.awt.Label;
-import java.awt.List;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-
-import javax.swing.JMenu;
-import java.awt.Color;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JSplitPane;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.SwingConstants;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.JTextPane;
-import javax.swing.JTable;
-import javax.swing.JList;
-import javax.swing.JScrollBar;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Point;
-import java.awt.Dimension;
-import javax.swing.JTextField;
-import java.awt.ComponentOrientation;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.SoftBevelBorder;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.LineBorder;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
 public class MainActivityGUI implements ActionListener, ListSelectionListener {
 
@@ -52,17 +13,28 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 	 static DefaultListModel<chatGUI> d;
 	 JButton Change;
 	 NewChatGUI newChat;
-	 JButton newChatBtn;
-	 ArrayList<String> onlineUsers;
-	 ArrayList<String> offlineUsers;
+	 JButton newPrivateChatBtn;
+	 static ArrayList<String> onlineUsers;
+	 static ArrayList<String> offlineUsers;
+	 JList<String> onlineList;
+	 chatGUI chat;
+	 JButton newGroupChatBtn;
+	 JButton deleteChatBtn;
+	 static String screenName="Test";
+	 JPanel panel ;
+	 JSplitPane splitPane_3;
+	 JPanel p ;
+	 JButton cancelDeleteBtn;
+	 
 	public MainActivityGUI(ArrayList<String> onlineUsers, ArrayList<String>offlineUsers) {
+		MainActivityGUI.onlineUsers=onlineUsers;
+		MainActivityGUI.offlineUsers=offlineUsers;
 		initialize();
 		frame.setVisible(true);
-		this.onlineUsers=onlineUsers;
-		this.offlineUsers=offlineUsers;
 	}
 
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 873, 589);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,6 +60,7 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
 		JSplitPane splitPane_1 = new JSplitPane();
+		splitPane_1.setEnabled(false);
 		splitPane_1.setResizeWeight(0.5);
 		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setRightComponent(splitPane_1);
@@ -98,33 +71,30 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		splitPane_1.setLeftComponent(splitPane_2);
 		
 		JSplitPane splitPane_4 = new JSplitPane();
+		splitPane_4.setEnabled(false);
 		splitPane_4.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane_2.setRightComponent(splitPane_4);
 		
 		JLabel label = new JLabel("< Online Users >");
 		splitPane_4.setLeftComponent(label);
 		
-		JPanel panel_1 = new JPanel();
-		splitPane_4.setRightComponent(panel_1);
-		panel_1.setLayout(new BorderLayout(0, 0));
-		
 		
 		DefaultListModel<String> a= new DefaultListModel<String>();
-		JList<String> onlineList = new JList<String>(a);
-		
-		for(String q:onlineUsers) {
-			a.addElement(q);
+		onlineList = new JList<String>(a);
+		JScrollPane scrollPane_1 = new JScrollPane(onlineList);
+		onlineList.addListSelectionListener(this);
+		onlineList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		for(String q:MainActivityGUI.onlineUsers) {
+				a.addElement(q);
 		}
-		
-		panel_1.add(onlineList, BorderLayout.NORTH);
-		
+		splitPane_4.setRightComponent(scrollPane_1);
 		JPanel panel_3 = new JPanel();
 		panel_3.setPreferredSize(new Dimension(10, 30));
 		splitPane_2.setLeftComponent(panel_3);
 		panel_3.setLayout(new BorderLayout(0, 0));
 		
 //		ImageIcon userIcon = new ImageIcon(getClass().getResource("/images/user.png"));
-		JLabel lblUsername = new JLabel("Screen name");
+		JLabel lblUsername = new JLabel("Screen name: "+screenName);
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUsername.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		panel_3.add(lblUsername, BorderLayout.CENTER);
@@ -141,29 +111,21 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		JLabel label_1 = new JLabel("<Off-line Users >");
 		splitPane_5.setLeftComponent(label_1);
 		
-		JPanel panel_2 = new JPanel();
-		splitPane_5.setRightComponent(panel_2);
-		panel_2.setLayout(new BorderLayout(0, 0));
 		DefaultListModel<String> v= new DefaultListModel<String>();
-		JList<String> offlineList = new JList<String>(v);
+		JList<String> offlineList = new JList<String>(v);	
+		JScrollPane scrollPane_2 = new JScrollPane(offlineList);
 		for(String q:offlineUsers) {
-			v.addElement(q);
+				v.addElement(q);
 		}
-		panel_2.add(offlineList, BorderLayout.CENTER);
+		splitPane_5.setRightComponent(scrollPane_2);
+		splitPane_1.setDividerLocation(275);
 		
-		newChat = new NewChatGUI();
-		newChat.setVisible(false);
-		
-		JSplitPane splitPane_3 = new JSplitPane();
+		splitPane_3 = new JSplitPane();
 		splitPane_3.setEnabled(false);
 		splitPane_3.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setLeftComponent(splitPane_3);
 		
-		newChatBtn = new JButton("+New chat");
-		newChatBtn.addActionListener(this);
-		splitPane_3.setLeftComponent(newChatBtn);
-		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		splitPane_3.setRightComponent(panel);
 		panel.setLayout(new BorderLayout(0, 0));
 		
@@ -171,46 +133,85 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		chatList = new JList<chatGUI>(d);
 		chatList.setFixedCellHeight(30);
 		chatList.addListSelectionListener(this);
-
 		chatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		panel.add(chatList, BorderLayout.CENTER);
+		
+		JPanel panel_5 = new JPanel();
+		splitPane_3.setLeftComponent(panel_5);
+		
+		newPrivateChatBtn = new JButton("+ New Private Chat");
+		newPrivateChatBtn.addActionListener(this);
+		panel_5.add(newPrivateChatBtn);
+		
+		newGroupChatBtn = new JButton("+ New Group Chat");
+		panel_5.add(newGroupChatBtn);
+		
+		deleteChatBtn = new JButton("- Delete Chat");
+		panel_5.add(deleteChatBtn);
+		deleteChatBtn.addActionListener(this);
+		newGroupChatBtn.addActionListener(this);
 		splitPane.setDividerLocation(500);
-		
+		p =new JPanel();
+		p.setLayout(new BorderLayout());
+		cancelDeleteBtn = new JButton("Cancel");
+		cancelDeleteBtn.addActionListener(this);
+		p.add(new JLabel("Please select chat to delete:"),BorderLayout.CENTER);
+		p.add(cancelDeleteBtn,BorderLayout.EAST);
+		panel.add(p,BorderLayout.NORTH);
+		p.setVisible(false);
 		frame.setLocationRelativeTo(null);
-		
 	}
 	
 	 
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==newChatBtn) {
-			newChat.chatNameField.setText("");
-			newChat.setVisible(true);
+		if(e.getSource()==newGroupChatBtn) {
+			newChat = new NewChatGUI("group");
+		}
+		if(e.getSource()==newPrivateChatBtn) {
+			newChat = new NewChatGUI("private");
+		}
+		if(e.getSource()==deleteChatBtn) {
+			p.setVisible(true);
+		}
+		if(e.getSource()==cancelDeleteBtn) {
+			p.setVisible(false);
+		}
+	}
+	
+	public void valueChanged(ListSelectionEvent e) {
+		if(onlineList.getSelectedIndex()!=-1) {
+			boolean exists=false;
+			for(chatGUI a :chats.listChats) {
+				if(a.getChatName().equals(onlineList.getSelectedValue())){
+					a.setVisible(true);
+					exists=true;
+				}
+			}
+			if(!exists) {
+			chat =new chatGUI(NewChatGUI.createChatRoomName(onlineList.getSelectedValue()));
+			chats.addchat(chat);
+			}
+			onlineList.clearSelection();
+		}
+
+		if(chatList.getSelectedIndex()!=-1) {
+			if(p.isVisible()) {
+				int res = JOptionPane.showConfirmDialog(null, "Are You Sure you want to delete "+chatList.getSelectedValue()+" ?", "Error", JOptionPane.YES_NO_OPTION);
+				if(res==JOptionPane.YES_OPTION) {
+					chats.removechat(chatList.getSelectedIndex());
+					JOptionPane.showMessageDialog(null, "Chat deleted!", "", JOptionPane.ERROR_MESSAGE);
+				}
+				p.setVisible(false);
+			}
+			else {
+			chats.listChats.get(chatList.getSelectedIndex()).setVisible(true);
+			}
+			chatList.clearSelection();
 		}
 		
 	}
 	
-	public void valueChanged(ListSelectionEvent e) {
-		if(chatList.getSelectedIndex()!=-1) {
-			chats.listChats.get((chatList.getSelectedIndex())).setVisible(true);
-		}
-	}
-//	private static void addPopup(Component component, final JPopupMenu popup) {
-//		component.addMouseListener(new MouseAdapter() {
-//			public void mousePressed(MouseEvent e) {
-//				if (e.isPopupTrigger()) {
-//					showMenu(e);
-//				}
-//			}
-//			public void mouseReleased(MouseEvent e) {
-//				if (e.isPopupTrigger()) {
-//					showMenu(e);
-//				}
-//			}
-//			private void showMenu(MouseEvent e) {
-//				popup.show(e.getComponent(), e.getX(), e.getY());
-//			}
-//		});
-//	}
+	
 
 //	@Override
 //	public Component getListCellRendererComponent(JList<? extends chatGUI> list, chatGUI chat, int index, boolean isSelected,

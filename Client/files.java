@@ -1,8 +1,11 @@
-import java.awt.*;
+package Client;
+
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.border.*;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.event.*;
 
@@ -10,7 +13,7 @@ public class files extends JFrame {
 
 	JFileChooser fc;
 
-	public files() {
+	public files(String chatName, ArrayList<String>users) {
 	
 		setBounds(100, 100, 512, 325);
 		fc = new JFileChooser(FileSystemView.getFileSystemView());
@@ -21,16 +24,11 @@ public class files extends JFrame {
 					JOptionPane.showMessageDialog(null, "File too large. Maximum size:", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				else {
-					try {
-						FileInputStream fis = new FileInputStream(selectedFile);
-						BufferedInputStream bis = new BufferedInputStream(fis);
-						
-						
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				
+					byte[] f = getFile(selectedFile);
+//					Message m = new Message("FILE","" ,users, f, selectedFile.getName(), chatName);
+//					Communication.send(m);
+					chats.updatechat(chatName, MainActivityGUI.screenName, "File " +selectedFile.getName()+ " sent.","right");
+					dispose();
 				}
 			}
 		});
@@ -39,5 +37,16 @@ public class files extends JFrame {
 		setVisible(true);
 		setLocationRelativeTo(null);
 	}
+	
+    public byte[] getFile(File file) {
+        Path f = file.toPath();
+        try {
+            return Files.readAllBytes(f);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
