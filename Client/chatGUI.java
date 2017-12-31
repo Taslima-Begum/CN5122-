@@ -5,42 +5,43 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionListener;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import javax.swing.border.BevelBorder;
 
 
 public class chatGUI extends JFrame implements ActionListener{
 	
 	private JPanel contentPane;
-	JTextArea messages;
-	JTextArea listOfUsers ;
-	String chatName;
-	JButton sendBtn = new JButton("Send");
-	JTextArea text = new JTextArea();
-	JButton attachFileBtn;
-	ArrayList<String> users;
-	String chatType;
-	String privateUser;
+	private String chatName,chatType;
+	private String nmessages="";
+	private JLabel chatNameLabel;
+	private JButton sendBtn = new JButton("Send");
+	private JButton attachFileBtn;
+	private JTextArea messages, listOfUsers ;
+	private JTextArea text = new JTextArea();
+	private ArrayList<String> users;
+	private int numberOfNewMessages=1;
+
 	//groupChat
-	
 	public chatGUI(String user) {
 		setTitle("Private Chat");
+		chatType="private";
 		users= new ArrayList<String>();
 		this.users.add(cutName(user));
 		this.chatName=user;
 		initialize();
 	}
 	
-	/**
-	 * @wbp.parser.constructor
-	 */
 	public chatGUI(String chatName, ArrayList<String> users){
 		setTitle("Group Chat");
+		chatType="public";
 		this.users=users;
 		this.chatName=chatName;
 		initialize();
 	}
-	
+
 	public void initialize() {
 			setBounds(100, 100, 596, 451);
 			contentPane = new JPanel();
@@ -53,9 +54,9 @@ public class chatGUI extends JFrame implements ActionListener{
 			panel_2.setMinimumSize(new Dimension(23, 29));
 			contentPane.add(panel_2, BorderLayout.NORTH);
 			
-			JLabel ChatName = new JLabel(cutName(chatName));
-			ChatName.setFont(new Font("Tahoma", Font.BOLD, 12));
-			panel_2.add(ChatName);
+			chatNameLabel = new JLabel(cutName(chatName));
+			chatNameLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+			panel_2.add(chatNameLabel);
 			
 			JSplitPane splitPane = new JSplitPane();
 			splitPane.setEnabled(false);
@@ -100,10 +101,11 @@ public class chatGUI extends JFrame implements ActionListener{
 			
 			attachFileBtn = new JButton("Send File");
 			attachFileBtn.addActionListener(this);
+	
 			panel_3.add(attachFileBtn);
 			
-			JButton emojiBtn = new JButton(":)");
-			panel_3.add(emojiBtn);
+			byte[] emojiBytes = new byte[] {(byte)0xF0,(byte)0x9F,(byte)0x98,(byte)0x81};
+			String emoji = new String (emojiBytes, Charset.forName("UTF-8"));
 			
 			JSplitPane splitPane_1 = new JSplitPane();
 			splitPane_1.setEnabled(false);
@@ -124,6 +126,7 @@ public class chatGUI extends JFrame implements ActionListener{
 		
 			text.setMargin(new Insets(10, 10, 10, 10));
 			scrollPane.setViewportView(text);
+				
 			splitPane_1.setDividerLocation(450);
 			splitPane.setDividerLocation(250);
 			setContentPane(contentPane);
@@ -135,9 +138,18 @@ public class chatGUI extends JFrame implements ActionListener{
 		return cutName(chatName);
 	}
 
+	public void setMessages(String message) {
+		messages.append("\n\r" +message);
+	}
+	
+	public void setMessagesOrientation(ComponentOrientation alignment) {
+		messages.setComponentOrientation(alignment);
+	}
+	
 	public String getFullChatName() {
 		return chatName;
 	}
+
 	public static String cutName(String fc){
 		int index = fc.indexOf("_");
 		String date = fc.substring(index);
@@ -145,17 +157,28 @@ public class chatGUI extends JFrame implements ActionListener{
 		return chatName;
 	}
 	
-	public String toString() {
-		return getChatName();
+	public String getChatType(){
+		return this.chatType;
 	}
 	
+	public void newMessage() {
+		nmessages="[NEW MESSAGE]" + numberOfNewMessages++;
+	}
+	
+	public void resetMessageCount() {
+		nmessages="";
+		numberOfNewMessages=1;
+	}
+	
+	public String toString() {
+		return getChatName() + nmessages;
+	}
 	
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource()==sendBtn) {
 			if(!text.getText().trim().isEmpty()){
-				chats.updatechat(chatName, MainActivityGUI.screenName, text.getText(),"right");
-//				Message m = new Message("MESSAGE",MainActivityGUI.screenName,users,text.getText(),chatName);
-//				Communication.send(m);
+				chats.updatechat(chatName, MainActivityGUI.getScreenName(), text.getText(),ComponentOrientation.RIGHT_TO_LEFT);
+				Communication.send(new Message("MESSAGE",MainActivityGUI.getScreenName(),users,text.getText(),chatName));
 			}	
 			text.setText("");
 		}
@@ -163,6 +186,4 @@ public class chatGUI extends JFrame implements ActionListener{
 			files f=new files(getFullChatName(),users);
 		}
 	}
-	
-	
 }

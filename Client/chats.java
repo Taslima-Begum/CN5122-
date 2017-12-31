@@ -11,29 +11,30 @@ import javax.swing.text.Highlighter;
 
 public class chats {
 	static ArrayList<chatGUI>listChats= new ArrayList<>();
-	
-	public static void addchat(chatGUI c) {
+
+	public static synchronized void addchat(chatGUI c) {
 		listChats.add(c);
-		MainActivityGUI.d.addElement(c);
-		System.out.print(listChats.size());
+		if(c.getChatType().equals("private"))
+			MainActivityGUI.addToPrivateChatList(c);
+		else
+			MainActivityGUI.addToGroupChatList(c);
 	}
-	public static void removechat(int chatName) {
+
+	public static void removechat(chatGUI chatName) {
 		listChats.remove(chatName);
-		MainActivityGUI.d.removeElementAt(chatName);
 	}
-	
-	public static synchronized void updatechat(String chatName, String srcUser, String message,String alignment) {
+
+	public static synchronized void updatechat(String chatName, String srcUser, String message,ComponentOrientation alignment) {
 		chatGUI chat = getChat(chatName);
-		if(alignment.equals("right")) {
-			chat.messages.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-			chat.messages.append("\n\r" + message + " : " +  srcUser +"\n\r"); 
+		chat.setMessagesOrientation(alignment);
+		if(!alignment.isLeftToRight()) {
+			chat.setMessages(message + " : " +  srcUser); 
 		}
-		if(alignment.equals("left")) {
-			chat.messages.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-			chat.messages.append("\n\r"+srcUser + ": " + message);
+		if(!alignment.isLeftToRight()) {
+			chat.setMessages(srcUser + ": " + message);
 		}
 	}
-	
+
 	public static boolean chatExists(String chatName) {
 		for(chatGUI chat:chats.listChats) {
 			if(chat.getFullChatName().equals(chatName)) {
@@ -42,6 +43,7 @@ public class chats {
 		}
 		return false;
 	}
+
 	public static chatGUI getChat(String chatName) {
 		for(chatGUI chat:chats.listChats) {
 			if(chat.getFullChatName().equals(chatName)) {

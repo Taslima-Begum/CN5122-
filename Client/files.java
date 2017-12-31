@@ -7,14 +7,15 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
+
+import java.awt.ComponentOrientation;
 import java.awt.event.*;
 
 public class files extends JFrame {
 
-	JFileChooser fc;
+	private JFileChooser fc;
 
 	public files(String chatName, ArrayList<String>users) {
-	
 		setBounds(100, 100, 512, 325);
 		fc = new JFileChooser(FileSystemView.getFileSystemView());
 		fc.addActionListener(new ActionListener() {
@@ -25,9 +26,8 @@ public class files extends JFrame {
 				}
 				else {
 					byte[] f = getFile(selectedFile);
-//					Message m = new Message("FILE","" ,users, f, selectedFile.getName(), chatName);
-//					Communication.send(m);
-					chats.updatechat(chatName, MainActivityGUI.screenName, "File " +selectedFile.getName()+ " sent.","right");
+					Communication.send(new Message("FILE", MainActivityGUI.getScreenName() ,users, f, selectedFile.getName(), chatName));
+					chats.updatechat(chatName, MainActivityGUI.getScreenName(), "File " +selectedFile.getName()+ " sent.",ComponentOrientation.RIGHT_TO_LEFT);
 					dispose();
 				}
 			}
@@ -37,16 +37,15 @@ public class files extends JFrame {
 		setVisible(true);
 		setLocationRelativeTo(null);
 	}
-	
-    public byte[] getFile(File file) {
-        Path f = file.toPath();
-        try {
-            return Files.readAllBytes(f);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
-    }
+
+	public byte[] getFile(File file) {
+		Path f = file.toPath();
+		try {
+			return Files.readAllBytes(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

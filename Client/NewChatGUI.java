@@ -13,32 +13,31 @@ import java.util.Date;
 public class NewChatGUI extends JFrame implements ActionListener {
 
 	private JPanel contentPane = new JPanel();
-	JTextField chatNameField = new JTextField();
-	JLabel lblNewLabel = new JLabel("Start a new Chat");
-	JButton nextBtn = new JButton("Next");
-	JLabel lblEnterChatName = new JLabel("Chat Name:");
-	JLabel errorLabel = new JLabel("");
-	chatGUI a;
-	JPanel panel;
-	ArrayList<String> users = new ArrayList<String>();
-	JScrollPane scrollPane = new JScrollPane(panel);
-	String type;
-	
+	private JTextField chatNameField = new JTextField();
+	private JLabel lblNewLabel = new JLabel("Start a new Chat");
+	private JButton nextBtn = new JButton("Next");
+	private JLabel lblEnterChatName = new JLabel("Chat Name:");
+	private JLabel errorLabel = new JLabel("");
+	private JPanel panel;
+	private ArrayList<String> users = new ArrayList<String>();
+	private JScrollPane scrollPane = new JScrollPane(panel);
+	private String type;
+
 	public NewChatGUI(String type) {
 		this.type=type;
 		setBounds(100, 100, 552, 438);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-	
+
 		contentPane.setLayout(null);
 		lblNewLabel.setBounds(99, 9, 314, 45);
 		lblNewLabel.setFont(new Font("Lucida Grande", Font.BOLD, 15));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(lblNewLabel);
-	
+
 		nextBtn.addActionListener(this);
 		nextBtn.setBounds(405, 335, 95, 29);
 		contentPane.add(nextBtn);
-		
+
 		panel = new JPanel();
 		for(String o:MainActivityGUI.onlineUsers) {
 			panel.add(new JCheckBox(o));
@@ -49,7 +48,7 @@ public class NewChatGUI extends JFrame implements ActionListener {
 		scrollPane.setViewportView(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
 		contentPane.add(scrollPane);
-		
+
 		if(type.equals("group")) {
 			chatNameField.setBounds(151, 339, 209, 20);
 			contentPane.add(chatNameField);
@@ -57,7 +56,7 @@ public class NewChatGUI extends JFrame implements ActionListener {
 			lblEnterChatName.setBounds(60, 339, 81, 20);
 			contentPane.add(lblEnterChatName);
 		}
-		
+
 		errorLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
 		errorLabel.setForeground(Color.RED);
 
@@ -75,36 +74,22 @@ public class NewChatGUI extends JFrame implements ActionListener {
 					errorLabel.setText("Error! Please enter Chat name");
 				}
 				else {
-					users.clear();
-					Component[] list =panel.getComponents();
-					for(Component s: list) {
-						if(((JCheckBox)s).isSelected()) {
-							users.add(((JCheckBox) s).getText());
-						}
-					}
+					getListComponents();
 					if(users.size()<2) {
 						errorLabel.setText("Please select at least 2 users");
 					}
 					else {
-						
-					a =new chatGUI(createChatRoomName(chatNameField.getText()),users);
-					chats.addchat(a);
-					setVisible(false);
+						chats.addchat(new chatGUI(createChatRoomName(chatNameField.getText()),users));
+						setVisible(false);
 					}
 				}
 			}
 			if(type.equals("private")) {
-				users.clear();
-				Component[] list =panel.getComponents();
-				for(Component s: list) {
-					if(((JCheckBox)s).isSelected()) {
-						users.add(((JCheckBox) s).getText());
-					}
-				}
+				getListComponents();
 				if(users.size()!=1) {
 					errorLabel.setText("Please select 1 user");
 				}
-				else {
+				else {//checks if a chat with the user already exists. if it does then makes chat visible.If not creates new chat
 					boolean exists=false;
 					for(chatGUI a :chats.listChats) {
 						if(a.getChatName().equals(users.get(0))){
@@ -114,21 +99,28 @@ public class NewChatGUI extends JFrame implements ActionListener {
 						}
 					}
 					if(!exists) {
-					a =new chatGUI(createChatRoomName(users.get(0)));
-					chats.addchat(a);
-					setVisible(false);
+						chats.addchat(new chatGUI(createChatRoomName(users.get(0))));
+						setVisible(false);
 					}
 				}
 			}
 		}
-	
+	}
+	//gets all selected checkboxes
+	public  void getListComponents() {
+		users.clear();
+		Component[] list =panel.getComponents();
+		for(Component s: list) {
+			if(((JCheckBox)s).isSelected()) {
+				users.add(((JCheckBox) s).getText());
+			}
+		}
 	}
 
 	public static String createChatRoomName(String chatName){
-		 String fullChat = chatName + getTimeStamp();
-		 return fullChat;
+		String fullChat = chatName + getTimeStamp();
+		return fullChat;
 	}
-
 	//This method creates the timestamp when the class is created
 	public static String getTimeStamp(){
 		SimpleDateFormat sdfDate = new SimpleDateFormat("_yyyy-MM-dd_HH:mm:ss");
@@ -136,5 +128,5 @@ public class NewChatGUI extends JFrame implements ActionListener {
 		String strDate = sdfDate.format(now);
 		return strDate;
 	}
-	
+
 }
