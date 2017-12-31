@@ -1,15 +1,10 @@
 package Client;
 
-
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import javax.swing.border.BevelBorder;
-
+import java.awt.event.*;
+import java.util.*;
 
 public class chatGUI extends JFrame implements ActionListener{
 	
@@ -19,12 +14,13 @@ public class chatGUI extends JFrame implements ActionListener{
 	private JLabel chatNameLabel;
 	private JButton sendBtn = new JButton("Send");
 	private JButton attachFileBtn;
-	private JTextArea messages, listOfUsers ;
+	JTextArea listOfUsers,messages;
 	private JTextArea text = new JTextArea();
 	private ArrayList<String> users;
 	private int numberOfNewMessages=1;
-
-	//groupChat
+	JButton btnEmoji;
+	 
+	//private chat
 	public chatGUI(String user) {
 		setTitle("Private Chat");
 		chatType="private";
@@ -33,7 +29,7 @@ public class chatGUI extends JFrame implements ActionListener{
 		this.chatName=user;
 		initialize();
 	}
-	
+	//groupChat
 	public chatGUI(String chatName, ArrayList<String> users){
 		setTitle("Group Chat");
 		chatType="public";
@@ -72,9 +68,7 @@ public class chatGUI extends JFrame implements ActionListener{
 			splitPane_2.setLeftComponent(scrollPane_1);
 			
 			messages = new JTextArea();
-			messages.setWrapStyleWord(true);
-			messages.setLineWrap(true);
-			messages.setMargin(new Insets(10, 10, 10, 10));
+			messages.setMargin(new Insets(10, 5, 10, 5));
 			messages.setEditable(false);
 			scrollPane_1.setViewportView(messages);
 			
@@ -104,8 +98,9 @@ public class chatGUI extends JFrame implements ActionListener{
 	
 			panel_3.add(attachFileBtn);
 			
-			byte[] emojiBytes = new byte[] {(byte)0xF0,(byte)0x9F,(byte)0x98,(byte)0x81};
-			String emoji = new String (emojiBytes, Charset.forName("UTF-8"));
+			btnEmoji = new JButton("emoji");
+			btnEmoji.addActionListener(this);
+			panel_3.add(btnEmoji);
 			
 			JSplitPane splitPane_1 = new JSplitPane();
 			splitPane_1.setEnabled(false);
@@ -113,7 +108,18 @@ public class chatGUI extends JFrame implements ActionListener{
 			
 			JPanel panel_1 = new JPanel();
 			splitPane_1.setRightComponent(panel_1);
-			
+			text.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					if(e.getKeyCode()==KeyEvent.VK_ENTER) {
+						if(!text.getText().trim().isEmpty()){
+							chats.updatechat(chatName, MainActivityGUI.getScreenName(), text.getText(),ComponentOrientation.RIGHT_TO_LEFT);
+							Communication.send(new Message("MESSAGE",MainActivityGUI.getScreenName(),users,text.getText(),chatName));
+						}	
+						text.setText("");
+					}
+				}
+			});
 			sendBtn.addActionListener(this);
 			sendBtn.setBounds(10, 21, 87, 38);
 			panel_1.setLayout(null);
@@ -130,8 +136,25 @@ public class chatGUI extends JFrame implements ActionListener{
 			splitPane_1.setDividerLocation(450);
 			splitPane.setDividerLocation(250);
 			setContentPane(contentPane);
+			setDefaultLookAndFeelDecorated(true);
 			setVisible(true);
 			setLocationRelativeTo(null);
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource()==sendBtn) {
+			if(!text.getText().trim().isEmpty()){
+				chats.updatechat(chatName, MainActivityGUI.getScreenName(), text.getText(),ComponentOrientation.RIGHT_TO_LEFT);
+				Communication.send(new Message("MESSAGE",MainActivityGUI.getScreenName(),users,text.getText(),chatName));
+			}	
+			text.setText("");
+		}
+		if(e.getSource()==attachFileBtn) {
+			files f=new files(getFullChatName(),users);
+		}
+		if(e.getSource()==btnEmoji) {
+	       
+		}
 	}
 	
 	public String getChatName() {
@@ -139,11 +162,29 @@ public class chatGUI extends JFrame implements ActionListener{
 	}
 
 	public void setMessages(String message) {
-		messages.append("\n\r" +message);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				messages.append(message);
+			}
+		});
+	}
+	
+	public void setMessages(Icon message) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				JLabel a=new JLabel(message);
+				messages.add(a);
+				a.setVisible(true);
+				}
+		});
 	}
 	
 	public void setMessagesOrientation(ComponentOrientation alignment) {
-		messages.setComponentOrientation(alignment);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				messages.setComponentOrientation(alignment);
+			}
+		});
 	}
 	
 	public String getFullChatName() {
@@ -172,18 +213,5 @@ public class chatGUI extends JFrame implements ActionListener{
 	
 	public String toString() {
 		return getChatName() + nmessages;
-	}
-	
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==sendBtn) {
-			if(!text.getText().trim().isEmpty()){
-				chats.updatechat(chatName, MainActivityGUI.getScreenName(), text.getText(),ComponentOrientation.RIGHT_TO_LEFT);
-				Communication.send(new Message("MESSAGE",MainActivityGUI.getScreenName(),users,text.getText(),chatName));
-			}	
-			text.setText("");
-		}
-		if(e.getSource()==attachFileBtn) {
-			files f=new files(getFullChatName(),users);
-		}
 	}
 }

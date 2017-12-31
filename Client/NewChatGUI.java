@@ -22,8 +22,10 @@ public class NewChatGUI extends JFrame implements ActionListener {
 	private ArrayList<String> users = new ArrayList<String>();
 	private JScrollPane scrollPane = new JScrollPane(panel);
 	private String type;
+	private final JCheckBox chckbxAll = new JCheckBox("All");
 
 	public NewChatGUI(String type) {
+		setTitle("New Chat");
 		this.type=type;
 		setBounds(100, 100, 552, 438);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -44,7 +46,7 @@ public class NewChatGUI extends JFrame implements ActionListener {
 		}
 
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(48, 75, 439, 208);
+		scrollPane.setBounds(50, 90, 439, 208);
 		scrollPane.setViewportView(panel);
 		panel.setLayout(new GridLayout(0, 1, 0, 0));
 		contentPane.add(scrollPane);
@@ -55,14 +57,26 @@ public class NewChatGUI extends JFrame implements ActionListener {
 			lblEnterChatName.setHorizontalAlignment(SwingConstants.CENTER);
 			lblEnterChatName.setBounds(60, 339, 81, 20);
 			contentPane.add(lblEnterChatName);
+			chckbxAll.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					Component[] a=panel.getComponents();
+					for(Component s: a) {
+						((JCheckBox)s).setSelected(chckbxAll.isSelected());
+					}
+				}
+			});
+			chckbxAll.setBounds(48, 45, 97, 23);
+			
+			contentPane.add(chckbxAll);
 		}
 
 		errorLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
 		errorLabel.setForeground(Color.RED);
 
-		errorLabel.setBounds(151, 367, 209, 14);
+		errorLabel.setBounds(178, 309, 209, 14);
 		contentPane.add(errorLabel);
 		setContentPane(contentPane);
+		
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
@@ -128,5 +142,4 @@ public class NewChatGUI extends JFrame implements ActionListener {
 		String strDate = sdfDate.format(now);
 		return strDate;
 	}
-
 }

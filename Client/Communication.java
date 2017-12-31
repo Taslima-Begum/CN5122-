@@ -8,11 +8,11 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
-public class Communication {
+public class Communication extends Thread{
 	private static Socket s;
 	private static ObjectOutputStream oos;
 	private static ObjectInputStream ois;
-
+	private Message m;
 	public Communication() {
 		try {
 			Properties p = new Properties();
@@ -21,10 +21,15 @@ public class Communication {
 			fis.close();
 			s = new Socket(p.getProperty("SERVERIPADDRESS"),Integer.parseInt(p.getProperty("PORT")));
 			ois=new ObjectInputStream(s.getInputStream());
+			oos = new ObjectOutputStream(s.getOutputStream());
 			while(!s.isClosed()) {
-				receive();
+				Thread t = new Communication();
+				m= (Message)ois.readObject();
+				t.start();
 			}
 		}  catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}finally {
 			try {
@@ -44,23 +49,15 @@ public class Communication {
 		}
 	}
 
-	public static void receive() {
-		try {
-			oos = new ObjectOutputStream(s.getOutputStream());
-			Message m= (Message)ois.readObject();
-			readMessage(m);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
+	public void run() {
+		readMessage(m);
 	}
 
 	public static void readMessage(Message m) {
 		switch(m.getType()) {
 		case "LOGIN" :
 			if(m.getResponse()) {
-				LoginGUI.frame.setVisible(false);
+				LoginGUI.frmLogin.setVisible(false);
 				JOptionPane.showMessageDialog(null, "Logging in......", "", JOptionPane.INFORMATION_MESSAGE);
 				Communication.send(new Message("USERS"));
 			}
@@ -71,7 +68,7 @@ public class Communication {
 		case "REGISTER" :
 			if(m.getResponse()) {
 				JOptionPane.showMessageDialog(null, "Registration successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-				LoginGUI.frame.setVisible(true);
+				LoginGUI.frmLogin.setVisible(true);
 			}
 			if(!m.getResponse()) {
 				JOptionPane.showMessageDialog(null, m.getReason(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -106,7 +103,7 @@ public class Communication {
 			}
 			break;
 		case "USERS" :
-			LoginGUI.frame.dispose();
+			LoginGUI.frmLogin.dispose();
 			MainActivityGUI window = new MainActivityGUI(m.getOnlineUser(),m.getOfflineUser());
 		}
 	}	

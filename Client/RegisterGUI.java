@@ -2,6 +2,7 @@ package Client;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.awt.Font;
 
 public class RegisterGUI extends JFrame implements ActionListener{
 
@@ -11,6 +12,7 @@ public class RegisterGUI extends JFrame implements ActionListener{
 	private JLabel errorLabel;
 
 	public RegisterGUI() {
+		setTitle("Register");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 480, 370);
 		contentPane = new JPanel();
@@ -40,8 +42,9 @@ public class RegisterGUI extends JFrame implements ActionListener{
 		contentPane.add(lblScreenName);
 
 		JLabel lblRegister = new JLabel("Register");
+		lblRegister.setFont(new Font("Tahoma", Font.BOLD, 13));
 		lblRegister.setHorizontalAlignment(SwingConstants.CENTER);
-		lblRegister.setBounds(179, 45, 73, 14);
+		lblRegister.setBounds(179, 45, 73, 20);
 		contentPane.add(lblRegister);
 
 		btnRegister = new JButton("Register");

@@ -38,14 +38,31 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		JMenu mnCustomize = new JMenu("Customize");
 		mnCustomize.setBackground(Color.GRAY);
 		menuBar.add(mnCustomize);
-
-		JMenuItem menuItem = new JMenuItem("New menu item");
-		mnCustomize.add(menuItem);
+		
+		JMenu mnChangeThem = new JMenu("Change theme");
+		mnCustomize.add(mnChangeThem);
+		
+		JMenuItem mntmBlack = new JMenuItem("Dark");
+		mnChangeThem.add(mntmBlack);
+		
+		JMenuItem mntmLight = new JMenuItem("Light");
+		mnChangeThem.add(mntmLight);
 
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
-
+		JPanel about = new JPanel();
+		about.setLayout(new BorderLayout());
+		JLabel aboutTitle = new JLabel("About");
+		JTextArea aboutText = new JTextArea("Chat messenger to connect with others");
+		about.add(aboutTitle,BorderLayout.NORTH);
+		about.add(aboutText,BorderLayout.CENTER);
 		JMenuItem mntmNewMenuItem = new JMenuItem("About");
+		mntmNewMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, about, "About", JOptionPane.PLAIN_MESSAGE);
+				
+			}
+		});
 		mnHelp.add(mntmNewMenuItem);
 
 		JMenu mnAccount = new JMenu("Account");
@@ -171,11 +188,19 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 	}
 
 	public static void addToPrivateChatList(chatGUI c) {
-		privateChatDLM.addElement(c);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				privateChatDLM.addElement(c);
+			}
+		});
 	}
 
 	public static void addToGroupChatList(chatGUI c) {
-		groupChatDLM.addElement(c);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				groupChatDLM.addElement(c);
+			}
+		});
 	}
 
 	public static String getScreenName() {
@@ -184,10 +209,18 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 
 	public void fillUserLists(){
 		for(String q:onlineUsers) {
-			onlineUsersListDLM.addElement(q);
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					onlineUsersListDLM.addElement(q);
+				}
+			});
 		}
 		for(String q:offlineUsers) {
-			offlineUsersListDLM.addElement(q);
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					offlineUsersListDLM.addElement(q);
+				}
+			});
 		}
 	}
 
@@ -207,7 +240,7 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		if(e.getSource()==mnLogout) {
 			int res=JOptionPane.showConfirmDialog(frame, "Are You Sure you want to logout?", "Logout", JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
 			if(res==JOptionPane.YES_OPTION) {
-				//				 Communication.closeConnection();
+				Communication.closeConnection();
 				frame.dispose();
 				LoginGUI a = new LoginGUI();
 			}

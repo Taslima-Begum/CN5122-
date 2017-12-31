@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class LoginGUI implements ActionListener{
 
-	static JFrame frame;
+	static JFrame frmLogin;
 	private JTextField usernameField;
 	private JPasswordField passwordField = new JPasswordField();
 	private JButton loginBtn = new JButton("Login");
@@ -16,52 +16,53 @@ public class LoginGUI implements ActionListener{
 	
 	public LoginGUI() {
 		initialize();
-		frame.setVisible(true);
+		frmLogin.setVisible(true);
 	}
 
 	private void initialize() {
-		frame = new JFrame();
-		frame.getContentPane().setBackground(new Color(255, 250, 250));
-		frame.setBounds(100, 100, 521, 482);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		frmLogin = new JFrame();
+		frmLogin.setTitle("Login");
+		frmLogin.getContentPane().setBackground(new Color(255, 250, 250));
+		frmLogin.setBounds(100, 100, 521, 482);
+		frmLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmLogin.getContentPane().setLayout(null);
 		
 		loginBtn.addActionListener(this);
 		loginBtn.setBounds(275, 316, 89, 23);
-		frame.getContentPane().add(loginBtn);
+		frmLogin.getContentPane().add(loginBtn);
 
 		registerBtn.setBounds(125, 316, 89, 23);
 		registerBtn.addActionListener(this);
-		frame.getContentPane().add(registerBtn);
+		frmLogin.getContentPane().add(registerBtn);
 		
 		JLabel lblUsername = new JLabel("USERNAME:");
 		lblUsername.setBounds(124, 187, 76, 14);
-		frame.getContentPane().add(lblUsername);
+		frmLogin.getContentPane().add(lblUsername);
 		
 		usernameField = new JTextField();
 		usernameField.setBounds(124, 202, 240, 28);
-		frame.getContentPane().add(usernameField);
+		frmLogin.getContentPane().add(usernameField);
 		usernameField.setColumns(10);
 		
 		JLabel lblNewLabel = new JLabel("PASSWORD:");
 		lblNewLabel.setBounds(124, 241, 76, 22);
-		frame.getContentPane().add(lblNewLabel);
+		frmLogin.getContentPane().add(lblNewLabel);
 		
 		
 		passwordField.setBounds(124, 261, 240, 28);
-		frame.getContentPane().add(passwordField);
+		frmLogin.getContentPane().add(passwordField);
 		
 		JPanel panel = new JPanel();
 		panel.setBounds(107, 31, 270, 129);
-		frame.getContentPane().add(panel);
+		frmLogin.getContentPane().add(panel);
 		
 		errorLabel = new JLabel("");
 		errorLabel.setBounds(218, 350, 46, 14);
-		frame.getContentPane().add(errorLabel);
-		frame.setLocationRelativeTo(null);
+		frmLogin.getContentPane().add(errorLabel);
+		frmLogin.setLocationRelativeTo(null);
 		
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		frmLogin.setJMenuBar(menuBar);
 		
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
