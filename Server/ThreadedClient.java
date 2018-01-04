@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -15,15 +16,16 @@ public class ThreadedClient extends Thread{
     private ArrayList<String>toWho;
     private String reason;
     private Boolean result;
-    public ThreadedClient(Socket socket) {
+    Database db;
+    public ThreadedClient(Socket socket,Database db) {
         this.socket = socket;
+        this.db=db;
     }
 
     @Override
     public void run() {
         try {
             //start database class
-            Database db = new Database();
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
           
@@ -38,12 +40,18 @@ public class ThreadedClient extends Thread{
             		if(result){
             			//IF RESULT IS TRUE THEN ADD SOCKET AND USERNAME TO DICTIONARY
             			onlineUsersWithSockets.put(message.getUserName(), socket);
+       
+            			for(Enumeration<Socket> e = onlineUsersWithSockets.elements(); e.hasMoreElements();){
+            				Message updateUser = new Message("UPDATE USERS",db.getOnlineUsers(),db.getOfflineUsers());
+            				out = new ObjectOutputStream(e.nextElement().getOutputStream());
+            				out.writeObject(updateUser);
+            			}
             		}
             		break;
             	case ("REGISTER"):
-            		result = db.registerUser(message.getUserName(), message.getPassword());
+            		result = db.registerUser(message.getUserName(), message.getPassword(),message.getScreenName());
             		reason = db.getResponse();
-            		Message registerMessage = new Message("REGISTER",result,reason); 
+            		Message registerMessage = new Message("REGISTER",result,reason,message.getScreenName()); 
             		out.writeObject(registerMessage); 
             		if(result){
             			//IF RESULT IS TRUE THEN ADD SOCKET AND USERNAME TO DICTIONARY
@@ -72,14 +80,44 @@ public class ThreadedClient extends Thread{
             		Message textMessage = new Message("MESSAGE",message.getsrcUser(),toWho,message.getMessageBody(),message.getChatName());
             		out.writeObject(textMessage);
             		}
+            	case ("LOGOUT"):
+            		onlineUsersWithSockets.remove(message.getUserName());
+            		db.setState(message.getUserName(), false);
+            		for(Enumeration<Socket> e = onlineUsersWithSockets.elements(); e.hasMoreElements();){
+        				Message loggedOutUser = new Message("UPDATE USERS",db.getOnlineUsers(),db.getOfflineUsers());
+        				out = new ObjectOutputStream(e.nextElement().getOutputStream());
+        				out.writeObject(loggedOutUser);
+        			}
+            	case ("SCREENNAME"): 
+            		result = db.changeScreenName(message.getOldScreenName(),message.getNewScreenName());
+            		logOut();
             		break;
+            	case ("PASSWORD"):
+            		db.changePassword(message.getUserName(), message.getPassword());
             	default:     	
             	}
             }
         }catch(Exception ex){
         	ex.printStackTrace();
+        } finally {
+        	try {
+        		if(socket != null){
+        			socket.close();
+        		}
+        	}catch(IOException e){
+        	}
         }
-
+    }
+    
+    public void logOut(){
+    	if(socket != null){
+    		try {
+				socket.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
 
 
