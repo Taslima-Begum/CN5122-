@@ -29,7 +29,7 @@ public class Message implements Serializable{
 	}
 
 	//clientRegister type=REGISTER
-	public Message(String type, String screenName, String username ,String password) {
+	public Message(String type, String username ,String password,String screenName) {
 		this.type=type;
 		this.screenName=screenName;
 		this.username=username;
@@ -45,26 +45,16 @@ public class Message implements Serializable{
 		this.fileName=fileName;
 		this.chatName=chatName;
 	}
-
-	//serverregister type=REGISTER & type=LOGIN
-	public Message(String type, boolean response,String reason){
+	//logout
+	public Message(String type , String username){
 		this.type=type;
-		this.response=response;
-		this.reason=reason;
+		this.username=username;
 	}
-
-	//server users type=USER
-	public Message(String type , ArrayList<String> onlineUsers,ArrayList<String> offlineUsers){
-		this.type=type;
-		this.offlineUsers=offlineUsers;
-		this.onlineUsers=onlineUsers;
-	}
-
-	//client userListrequest type=USER
+	//client user
 	public Message(String type){
 		this.type=type;
 	}
-
+	
 	public String getReason() {
 		return this.type;
 	}
@@ -114,6 +104,10 @@ public class Message implements Serializable{
 	}
 
 	public String getPassword() {
+		return this.password;
+	}
+	
+	public String getScreenName() {
 		return this.password;
 	}
 }
