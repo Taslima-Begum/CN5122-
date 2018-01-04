@@ -30,6 +30,9 @@ public class chatGUI extends JFrame implements ActionListener{
 		initialize();
 	}
 	//groupChat
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public chatGUI(String chatName, ArrayList<String> users){
 		setTitle("Group Chat");
 		chatType="public";
@@ -102,6 +105,9 @@ public class chatGUI extends JFrame implements ActionListener{
 			btnEmoji.addActionListener(this);
 			panel_3.add(btnEmoji);
 			
+			JLayeredPane layeredPane = new JLayeredPane();
+			panel_3.add(layeredPane);
+			
 			JSplitPane splitPane_1 = new JSplitPane();
 			splitPane_1.setEnabled(false);
 			panel.add(splitPane_1, BorderLayout.CENTER);
@@ -114,9 +120,9 @@ public class chatGUI extends JFrame implements ActionListener{
 					if(e.getKeyCode()==KeyEvent.VK_ENTER) {
 						if(!text.getText().trim().isEmpty()){
 							chats.updatechat(chatName, MainActivityGUI.getScreenName(), text.getText(),ComponentOrientation.RIGHT_TO_LEFT);
+							text.setText("");
 							Communication.send(new Message("MESSAGE",MainActivityGUI.getScreenName(),users,text.getText(),chatName));
 						}	
-						text.setText("");
 					}
 				}
 			});
@@ -164,7 +170,7 @@ public class chatGUI extends JFrame implements ActionListener{
 	public void setMessages(String message) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				messages.append(message);
+				messages.append("\n\r"+message);
 			}
 		});
 	}
