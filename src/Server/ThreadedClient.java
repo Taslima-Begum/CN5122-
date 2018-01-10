@@ -29,9 +29,10 @@ public class ThreadedClient extends Thread{
 	@Override
 	public void run() {
 		try {
-
 			out = new ObjectOutputStream(socket.getOutputStream());  
+
 			in = new ObjectInputStream(socket.getInputStream());
+
 			while(!socket.isClosed()) {
 
 				message = (Client.Message) in.readObject(); 
@@ -119,12 +120,17 @@ public class ThreadedClient extends Thread{
 
 			}
 
+
 		}catch(Exception ex){
 			ex.printStackTrace();
 		}
 		finally {
 			try {
+				out.close();
+				in.close();
+				newServer.insertToDoc(socket.getInetAddress());
 				socket.close();
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

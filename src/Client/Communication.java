@@ -22,25 +22,29 @@ public class Communication extends Thread{
 			p.load(fis); 
 			fis.close();
 			s = new Socket(p.getProperty("SERVERIPADDRESS"),Integer.parseInt(p.getProperty("PORT")));
+			loginGUI =new LoginGUI(this);
 			ois=new ObjectInputStream(s.getInputStream());
 			oos = new ObjectOutputStream(s.getOutputStream());
-			loginGUI =new LoginGUI(this);
-			while(s.isConnected()) {
-				if((m= (Server.Message)ois.readObject())!=null) {
+			while((m= (Server.Message)ois.readObject())!=null){
+//				if( {
 					readMessage(m);
-				} 
+//				} 
 			}
-		}  catch (IOException e) {
+		
+		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}finally {
 			try {
+				oos.close();
+				ois.close();
 				s.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		
 		}
 	}
 

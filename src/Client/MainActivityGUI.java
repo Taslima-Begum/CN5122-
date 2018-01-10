@@ -6,6 +6,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 public class MainActivityGUI implements ActionListener, ListSelectionListener {
 
@@ -128,7 +129,7 @@ public class MainActivityGUI implements ActionListener, ListSelectionListener {
 		lblUsername.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblUsername.setHorizontalAlignment(SwingConstants.CENTER);
 		lblUsername.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		panel_3.add(lblUsername, BorderLayout.WEST);
+		panel_3.add(lblUsername, BorderLayout.CENTER);
 
 		Change = new JButton("Change");
 		Change.setMargin(new Insets(2, 10, 2, 10));

@@ -1,5 +1,6 @@
 package Server;
 
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -82,7 +83,14 @@ public class NewServer extends ServerClient{
 			}
 		}
 	}
-
+	public synchronized void insertToDoc(InetAddress a) {
+	try {
+		doc.insertString(doc.getLength(), "Connection from " + a + "closed" +"\n", doc.getStyle("Regular"));
+	} catch (BadLocationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+}
 	public synchronized void addToDictionary(String screenName, ObjectOutputStream out) {
 		onlineUsersWithSockets.put(screenName, out);
 	}
